@@ -173,7 +173,7 @@ def call(Map config = [:]) {
             try {
 
                 stage("Checkout") {
-                    checkoutCode(config)
+                    codeCheckout(config)
                 }
 
                 stage("Build & Test") {
