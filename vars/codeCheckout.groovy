@@ -120,125 +120,125 @@ def call(Map config = [:]) {
 ///////////////
 
 
-pipeline {
-    agent any
+// pipeline {
+//     agent any
 
-    options {
-        disableConcurrentBuilds()
-    }
+//     options {
+//         disableConcurrentBuilds()
+//     }
 
-    environment {
-        FETCH_DEPTH = "50"   // 20 bhi kar sakta hai (risk vs speed)
-        BASE_BRANCH = "main"
-    }
+//     environment {
+//         FETCH_DEPTH = "50"   // 20 bhi kar sakta hai (risk vs speed)
+//         BASE_BRANCH = "main"
+//     }
 
-    stages {
+//     stages {
 
-        stage('Checkout (Lightweight for Diff)') {
-            steps {
-                script {
-                    sh '''
-                        set -e
+//         stage('Checkout (Lightweight for Diff)') {
+//             steps {
+//                 script {
+//                     sh '''
+//                         set -e
 
-                        echo "=== CLEAN OLD REPO ==="
-                        rm -rf .git
+//                         echo "=== CLEAN OLD REPO ==="
+//                         rm -rf .git
 
-                        echo "=== INIT NEW REPO ==="
-                        git init
+//                         echo "=== INIT NEW REPO ==="
+//                         git init
 
-                        echo "=== ADD REMOTE ==="
-                        git remote add origin ${GIT_URL}
+//                         echo "=== ADD REMOTE ==="
+//                         git remote add origin ${GIT_URL}
 
-                        echo "=== FETCH CURRENT BRANCH ==="
-                        git fetch origin ${BRANCH_NAME} --depth=${FETCH_DEPTH}
-                        git checkout FETCH_HEAD
+//                         echo "=== FETCH CURRENT BRANCH ==="
+//                         git fetch origin ${BRANCH_NAME} --depth=${FETCH_DEPTH}
+//                         git checkout FETCH_HEAD
 
-                        echo "=== FETCH BASE BRANCH FOR DIFF ==="
-                        git fetch origin ${BASE_BRANCH} --depth=${FETCH_DEPTH}
-                    '''
-                }
-            }
-        }
+//                         echo "=== FETCH BASE BRANCH FOR DIFF ==="
+//                         git fetch origin ${BASE_BRANCH} --depth=${FETCH_DEPTH}
+//                     '''
+//                 }
+//             }
+//         }
 
-        stage('Detect Changed Services') {
-            steps {
-                script {
+//         stage('Detect Changed Services') {
+//             steps {
+//                 script {
 
-                    echo "=== RUNNING GIT DIFF ==="
+//                     echo "=== RUNNING GIT DIFF ==="
 
-                    def changedFiles = sh(
-                        script: "git diff origin/${BASE_BRANCH}...HEAD --name-only",
-                        returnStdout: true
-                    ).trim()
+//                     def changedFiles = sh(
+//                         script: "git diff origin/${BASE_BRANCH}...HEAD --name-only",
+//                         returnStdout: true
+//                     ).trim()
 
-                    if (!changedFiles) {
-                        echo "No changes detected"
-                        return
-                    }
+//                     if (!changedFiles) {
+//                         echo "No changes detected"
+//                         return
+//                     }
 
-                    def fileList = changedFiles.split("\\n")
+//                     def fileList = changedFiles.split("\\n")
 
-                    echo "Changed Files: ${fileList}"
+//                     echo "Changed Files: ${fileList}"
 
-                    def services = [] as Set
+//                     def services = [] as Set
 
-                    fileList.each { file ->
-                        if (file.startsWith("src/")) {
-                            def parts = file.split("/")
-                            if (parts.size() > 1) {
-                                services.add(parts[1])
-                            }
-                        }
-                    }
+//                     fileList.each { file ->
+//                         if (file.startsWith("src/")) {
+//                             def parts = file.split("/")
+//                             if (parts.size() > 1) {
+//                                 services.add(parts[1])
+//                             }
+//                         }
+//                     }
 
-                    if (services.isEmpty()) {
-                        echo "No service-level changes detected"
-                        return
-                    }
+//                     if (services.isEmpty()) {
+//                         echo "No service-level changes detected"
+//                         return
+//                     }
 
-                    env.CHANGED_SERVICES = services.join(",")
+//                     env.CHANGED_SERVICES = services.join(",")
 
-                    echo "Changed services: ${env.CHANGED_SERVICES}"
-                }
-            }
-        }
+//                     echo "Changed services: ${env.CHANGED_SERVICES}"
+//                 }
+//             }
+//         }
 
-        stage('Run Service Pipelines') {
-            when {
-                expression { return env.CHANGED_SERVICES }
-            }
+//         stage('Run Service Pipelines') {
+//             when {
+//                 expression { return env.CHANGED_SERVICES }
+//             }
 
-            steps {
-                script {
+//             steps {
+//                 script {
 
-                    def services = env.CHANGED_SERVICES.split(",")
+//                     def services = env.CHANGED_SERVICES.split(",")
 
-                    echo "Services to run: ${services}"
+//                     echo "Services to run: ${services}"
 
-                    def parallelJobs = services.collectEntries { svc ->
+//                     def parallelJobs = services.collectEntries { svc ->
 
-                        ["${svc}": {
+//                         ["${svc}": {
 
-                            echo "=== Running ${svc} pipeline ==="
+//                             echo "=== Running ${svc} pipeline ==="
 
-                            dir("src/${svc}") {
-                                load "Jenkinsfile"
-                            }
-                        }]
-                    }
+//                             dir("src/${svc}") {
+//                                 load "Jenkinsfile"
+//                             }
+//                         }]
+//                     }
 
-                    echo "=== RUNNING IN PARALLEL ==="
+//                     echo "=== RUNNING IN PARALLEL ==="
 
-                    parallel parallelJobs
-                }
-            }
-        }
-    }
+//                     parallel parallelJobs
+//                 }
+//             }
+//         }
+//     }
 
-    post {
-        always {
-            echo "=== CLEAN WORKSPACE ==="
-            cleanWs()
-        }
-    }
-}
+//     // post {
+//     //     always {
+//     //         echo "=== CLEAN WORKSPACE ==="
+//     //         cleanWs()
+//     //     }
+//     // }
+// }

@@ -166,7 +166,7 @@ def call(Map config = [:]) {
             env.GRADLE_USER_HOME = "${pwd()}/.gradle"
             env.SONAR_USER_HOME  = "${pwd()}/.sonar"
             env.TRIVY_CACHE_DIR  = "${pwd()}/.trivy-cache"
-
+            env.GIT_URL = "${config.gitUrl}"
             env.ECR_REPO = config.ecrRepo
             env.AWS_REGION = "us-east-1"
 
