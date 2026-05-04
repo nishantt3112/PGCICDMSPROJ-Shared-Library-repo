@@ -152,24 +152,120 @@
 
 ////////////
 
+// def call(Map config = [:]) {
+
+//     node {
+
+//         docker.image(
+//             config.dockerCiPrebakedImage
+//         ).inside(
+//             config.dockerCIPrebakedImageArgs ?: ''
+//         ) {
+
+//             env.HOME = "${pwd()}"
+//             env.WORKSPACE_ROOT = "${pwd()}"
+
+//             // ONLY SAFE TEMP CACHE BASE (language independent)
+//             env.TMP_DIR = "/tmp/jenkins-${env.BUILD_ID}"
+//             sh "mkdir -p $TMP_DIR"
+
+
+//             env.HOME = "${pwd()}"
+//             env.GRADLE_USER_HOME = "${pwd()}/.gradle"
+//             env.SONAR_USER_HOME  = "${pwd()}/.sonar"
+//             env.TRIVY_CACHE_DIR  = "${pwd()}/.trivy-cache"
+//             env.GIT_URL = "${config.gitUrl}"
+//             env.ECR_REPO = config.ecrRepo
+//             env.AWS_REGION = "us-east-1"
+//             TRIVY_CACHE_DIR   = "/tmp/trivy-cache"
+
+//             try {
+
+//                 stage("Checkout") {
+//                     codeCheckout(config)
+//                 }
+
+//                 stage("Build & Test") {
+//                     buildAndTest(config)
+//                 }
+
+//                 stage("Sonar Scan") {
+//                     sonarScan(config)
+//                 }
+
+//                 stage("Trivy Scan") {
+//                     trivyScan(config)
+//                 }
+
+//                 stage("Archive Reports") {
+//                     archiveReports(config)
+//                 }
+
+//                 echo "BUILD SUCCESS"
+
+//             } catch(Exception e) {
+
+//                 echo "BUILD FAILED"
+
+//                 throw e
+//             }
+//         }
+//     }
+// }
+
 def call(Map config = [:]) {
 
     node {
 
-        docker.image(
-            config.dockerCiPrebakedImage
-        ).inside(
-            config.dockerCIPrebakedImageArgs ?: ''
-        ) {
+        docker.image(config.dockerCiPrebakedImage)
+        .inside(config.dockerCIPrebakedImageArgs ?: '') {
 
-            env.HOME = "${pwd()}"
-            env.GRADLE_USER_HOME = "${pwd()}/.gradle"
-            env.SONAR_USER_HOME  = "${pwd()}/.sonar"
-            env.TRIVY_CACHE_DIR  = "${pwd()}/.trivy-cache"
-            env.GIT_URL = "${config.gitUrl}"
-            env.ECR_REPO = config.ecrRepo
-            env.AWS_REGION = "us-east-1"
-            TRIVY_CACHE_DIR   = "/tmp/trivy-cache"
+            stage("Init Env") {
+                script {
+
+                    // Base workspace
+                    env.HOME = pwd()
+                    env.WORKSPACE_ROOT = pwd()
+
+                    // ONLY SAFE TEMP CACHE BASE (language independent)
+                    env.TMP_DIR = "/tmp/jenkins-${env.BUILD_ID}"
+                    sh "mkdir -p ${env.TMP_DIR}"
+
+                    // language agnostic caches
+                    env.SONAR_USER_HOME = "${env.TMP_DIR}/sonar"
+                    env.TRIVY_CACHE_DIR  = "${env.TMP_DIR}/trivy"
+
+                    // shared external configs
+                    env.GIT_URL   = config.gitUrl ?: ""
+                    env.ECR_REPO  = config.ecrRepo ?: ""
+                    env.AWS_REGION = "us-east-1"
+
+                    // -----------------------------
+                    // language specific (UNCHANGED)
+                    // -----------------------------
+                    if (config.programmingLanguage == "java") {
+                        env.GRADLE_USER_HOME = "${env.TMP_DIR}/gradle"
+                    }
+
+                    if (config.programmingLanguage == "dotnet") {
+                        env.DOTNET_CLI_HOME = "${env.TMP_DIR}/dotnet"
+                        env.NUGET_PACKAGES = "${env.TMP_DIR}/nuget"
+                    }
+
+                    if (config.programmingLanguage == "node") {
+                        env.NPM_CONFIG_CACHE = "${env.TMP_DIR}/npm"
+                    }
+
+                    if (config.programmingLanguage == "python") {
+                        env.PIP_CACHE_DIR = "${env.TMP_DIR}/pip"
+                    }
+
+                    if (config.programmingLanguage == "go") {
+                        env.GOCACHE = "${env.TMP_DIR}/go-cache"
+                        env.GOMODCACHE = "${env.TMP_DIR}/gomod"
+                    }
+                }
+            }
 
             try {
 
@@ -195,10 +291,9 @@ def call(Map config = [:]) {
 
                 echo "BUILD SUCCESS"
 
-            } catch(Exception e) {
+            } catch (Exception e) {
 
-                echo "BUILD FAILED"
-
+                echo "BUILD FAILED: ${e.message}"
                 throw e
             }
         }
