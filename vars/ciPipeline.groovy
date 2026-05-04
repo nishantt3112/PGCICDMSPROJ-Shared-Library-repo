@@ -169,6 +169,7 @@ def call(Map config = [:]) {
             env.GIT_URL = "${config.gitUrl}"
             env.ECR_REPO = config.ecrRepo
             env.AWS_REGION = "us-east-1"
+            TRIVY_CACHE_DIR   = "/tmp/trivy-cache"
 
             try {
 
