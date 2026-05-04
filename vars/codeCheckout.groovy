@@ -71,13 +71,77 @@
 // }
 
 
+    // def call(Map config = [:]) {
+
+    //     def servicePath = config.servicePath
+    //     def servicePath = config.servicePath
+
+    //     def branch =
+    //     env.GIT_BRANCH?.replace("origin/", "") ?: "main"
+
+    //     echo "BRANCH=${branch}"
+
+    //     def fullHistory = (env.BRANCH_NAME == 'main' || 
+    //                     env.BRANCH_NAME == 'prod' || 
+    //                     env.BRANCH_NAME == 'stage')
+
+    //     withCredentials([usernamePassword(
+    //         credentialsId: 'git-credentials-id',
+    //         usernameVariable: 'GIT_USER',
+    //         passwordVariable: 'GIT_PASS'
+    //     )]) {
+
+    //         sh """
+    //             set -e
+
+    //             rm -rf .git
+
+    //             git init
+
+    //             git remote add origin https://${GIT_USER}:${GIT_PASS}@${env.GIT_URL.replace('https://', '')}
+
+    //             echo "=== FETCH ==="
+                
+    //             ${fullHistory 
+    //                 ? "git fetch origin ${env.BRANCH_NAME}" 
+    //                 : "git fetch --depth=1 origin ${env.BRANCH_NAME}"}
+
+    //             echo "=== SPARSE INIT ==="
+
+    //             git sparse-checkout init --cone
+
+    //             echo "=== SET SERVICE ==="
+
+    //             git sparse-checkout set ${servicePath}
+
+    //             echo "=== CHECKOUT ==="
+
+    //             git checkout ${env.BRANCH_NAME}
+
+    //             echo "=== DONE ==="
+    //         """
+    //     }
+    // }
+
+
 def call(Map config = [:]) {
 
     def servicePath = config.servicePath
 
-    def fullHistory = (env.BRANCH_NAME == 'main' || 
-                       env.BRANCH_NAME == 'prod' || 
-                       env.BRANCH_NAME == 'stage')
+    // Normal pipeline ke liye GIT_BRANCH use karo
+    // Example: origin/main -> main
+    def branch =
+        env.GIT_LOCAL_BRANCH ?:
+        env.GIT_BRANCH?.replace("origin/", "") ?:
+        "main"
+
+    echo "CHECKOUT BRANCH = ${branch}"
+
+    def fullHistory = (
+        branch == 'main'  ||
+        branch == 'prod'  ||
+        branch == 'stage'
+    )
 
     withCredentials([usernamePassword(
         credentialsId: 'git-credentials-id',
@@ -85,21 +149,38 @@ def call(Map config = [:]) {
         passwordVariable: 'GIT_PASS'
     )]) {
 
-        sh """
+        sh '''
             set -e
 
             rm -rf .git
 
             git init
+        '''
 
-            git remote add origin https://${GIT_USER}:${GIT_PASS}@${env.GIT_URL.replace('https://', '')}
+        // Groovy interpolation yahan intentionally outside shell secret warning avoid karne ke liye
+        def repoUrl =
+            env.GIT_URL.replace("https://", "")
+
+        sh """
+            git remote add origin https://\$GIT_USER:\$GIT_PASS@${repoUrl}
 
             echo "=== FETCH ==="
-            
-            ${fullHistory 
-                ? "git fetch origin ${env.BRANCH_NAME}" 
-                : "git fetch --depth=1 origin ${env.BRANCH_NAME}"}
+        """
 
+        if(fullHistory) {
+
+            sh """
+                git fetch origin ${branch}
+            """
+
+        } else {
+
+            sh """
+                git fetch --depth=1 origin ${branch}
+            """
+        }
+
+        sh """
             echo "=== SPARSE INIT ==="
 
             git sparse-checkout init --cone
@@ -110,13 +191,12 @@ def call(Map config = [:]) {
 
             echo "=== CHECKOUT ==="
 
-            git checkout ${env.BRANCH_NAME}
+            git checkout ${branch}
 
             echo "=== DONE ==="
         """
     }
 }
-
 ///////////////
 
 
