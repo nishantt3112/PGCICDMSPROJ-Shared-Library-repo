@@ -280,10 +280,15 @@ def call(Map config = [:]) {
 
         stage('JUnit Reports') {
 
+                if (config.jUnitReportPath?.trim()) {
             junit(
                 allowEmptyResults: true,
-                testResults: config.jUnitReportPath ?: defaultTestPath(config)
+                testResults: config.jUnitReportPath
             )
+        } else {
+            echo "Skipping JUnit stage (no report path provided)"
+        }
+
         }
     }
 }
