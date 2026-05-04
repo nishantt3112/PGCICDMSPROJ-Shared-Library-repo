@@ -244,7 +244,7 @@ def call(Map config = [:]) {
     // NOW APPLY SPARSE CHECKOUT ON TOP
     sh """
         set -e
-
+        git config --global --add safe.directory '*'
         echo "=== ENABLE SPARSE CHECKOUT ==="
 
         git sparse-checkout init --cone
