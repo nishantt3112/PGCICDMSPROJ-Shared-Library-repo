@@ -263,6 +263,7 @@ def call(Map config = [:]) {
                     if (config.programmingLanguage == "go") {
                         env.GOCACHE = "${env.TMP_DIR}/go-cache"
                         env.GOMODCACHE = "${env.TMP_DIR}/gomod"
+                        env.GOTOOLCHAIN ="auto"
                     }
                 }
             }
