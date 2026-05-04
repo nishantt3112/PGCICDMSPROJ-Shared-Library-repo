@@ -14,137 +14,191 @@
 
 
 
+// def call(Map config = [:]) {
+
+//     pipeline {
+
+//         //////////////////////////////////////////////
+//         /// Agent
+//         //////////////////////////////////////////////
+//         agent {
+//             docker {
+//                 image config.dockerCiPrebakedImage
+//                 args config.dockerCIPrebakedImageArgs
+//             }
+//         }
+
+//         //////////////////////////////////////////////
+//         /// ENV
+//         //////////////////////////////////////////////
+//         environment {
+//             HOME = "${WORKSPACE}"
+//             GRADLE_USER_HOME = "${WORKSPACE}/.gradle"
+//             SONAR_USER_HOME  = "${WORKSPACE}/.sonar"
+//             TRIVY_CACHE_DIR  = "${WORKSPACE}/.trivy-cache"
+
+//             GIT_URL   = "${config.gitUrl}"
+//             ECR_REPO  = "${config.ecrRepo}"
+//             AWS_REGION = "us-east-1"
+
+//             IMAGE_NAME = "${config.ecrRepo}:${env.GIT_COMMIT?.take(7)}-${env.BUILD_NUMBER}"
+//         }
+
+//         //////////////////////////////////////////////
+//         /// Options
+//         //////////////////////////////////////////////
+//         options {
+//             skipDefaultCheckout(true)  // required if cleaning before checkout
+//         }
+
+//         //////////////////////////////////////////////
+//         /// Stages
+//         //////////////////////////////////////////////
+//         stages {
+
+//             //////////////////////////////////////////////
+//             /// Clean Workspace (BEFORE BUILD)
+//             // //////////////////////////////////////////////
+//             // stage('Clean Workspace') {
+//             //     steps {
+//             //         cleanWs()
+//             //     }
+//             // }
+
+//             //////////////////////////////////////////////
+//             /// Checkout
+//             //////////////////////////////////////////////
+//             stage('Checkout') {
+//                 steps {
+//                     script {
+//                         checkoutCode(config)
+//                     }
+//                 }
+//             }
+
+//             //////////////////////////////////////////////
+//             /// Build & Test
+//             //////////////////////////////////////////////
+//             stage('Build & Test') {
+//                 steps {
+//                     script {
+//                         buildAndTest(config)
+//                     }
+//                 }
+//             }
+
+//             //////////////////////////////////////////////
+//             /// Sonar Scan
+//             //////////////////////////////////////////////
+//             stage('Sonar Scan') {
+//                 steps {
+//                     script {
+//                         sonarScan(config)
+//                     }
+//                 }
+//             }
+
+//             //////////////////////////////////////////////
+//             /// Trivy Scan
+//             //////////////////////////////////////////////
+//             stage('Trivy Scan') {
+//                 steps {
+//                     script {
+//                         trivyScan(config)
+//                     }
+//                 }
+//             }
+
+//             //////////////////////////////////////////////
+//             /// Archive Reports
+//             //////////////////////////////////////////////
+//             stage('Archive Reports') {
+//                 steps {
+//                     script {
+//                         archiveReports(config)
+//                     }
+//                 }
+//             }
+//         }
+
+//         //////////////////////////////////////////////
+//         /// Post Actions
+//         //////////////////////////////////////////////
+//         post {
+
+//             //////////////////////////////////////////////
+//             /// Clean AFTER BUILD
+//             //////////////////////////////////////////////
+//             // always {
+//             //     echo "=== CLEANING WORKSPACE ==="
+
+//             //     cleanWs(
+//             //         deleteDirs: true,
+//             //         disableDeferredWipeout: true,
+//             //         notFailBuild: true
+//             //     )
+//             // }
+
+//             success {
+//                 echo " BUILD SUCCESS"
+//             }
+
+//             failure {
+//                 echo " BUILD FAILED"
+//             }
+//         }
+//     }
+// }
+
+////////////
+
 def call(Map config = [:]) {
 
-    pipeline {
+    node {
 
-        //////////////////////////////////////////////
-        /// Agent
-        //////////////////////////////////////////////
-        agent {
-            docker {
-                image config.dockerCiPrebakedImage
-                args config.dockerCIPrebakedImageArgs
-            }
-        }
+        docker.image(
+            config.dockerCiPrebakedImage
+        ).inside(
+            config.dockerCIPrebakedImageArgs ?: ''
+        ) {
 
-        //////////////////////////////////////////////
-        /// ENV
-        //////////////////////////////////////////////
-        environment {
-            HOME = "${WORKSPACE}"
-            GRADLE_USER_HOME = "${WORKSPACE}/.gradle"
-            SONAR_USER_HOME  = "${WORKSPACE}/.sonar"
-            TRIVY_CACHE_DIR  = "${WORKSPACE}/.trivy-cache"
+            env.HOME = "${pwd()}"
+            env.GRADLE_USER_HOME = "${pwd()}/.gradle"
+            env.SONAR_USER_HOME  = "${pwd()}/.sonar"
+            env.TRIVY_CACHE_DIR  = "${pwd()}/.trivy-cache"
 
-            GIT_URL   = "${config.gitUrl}"
-            ECR_REPO  = "${config.ecrRepo}"
-            AWS_REGION = "us-east-1"
+            env.ECR_REPO = config.ecrRepo
+            env.AWS_REGION = "us-east-1"
 
-            IMAGE_NAME = "${config.ecrRepo}:${env.GIT_COMMIT?.take(7)}-${env.BUILD_NUMBER}"
-        }
+            try {
 
-        //////////////////////////////////////////////
-        /// Options
-        //////////////////////////////////////////////
-        options {
-            skipDefaultCheckout(true)  // required if cleaning before checkout
-        }
-
-        //////////////////////////////////////////////
-        /// Stages
-        //////////////////////////////////////////////
-        stages {
-
-            //////////////////////////////////////////////
-            /// Clean Workspace (BEFORE BUILD)
-            // //////////////////////////////////////////////
-            // stage('Clean Workspace') {
-            //     steps {
-            //         cleanWs()
-            //     }
-            // }
-
-            //////////////////////////////////////////////
-            /// Checkout
-            //////////////////////////////////////////////
-            stage('Checkout') {
-                steps {
-                    script {
-                        checkoutCode(config)
-                    }
+                stage("Checkout") {
+                    checkoutCode(config)
                 }
-            }
 
-            //////////////////////////////////////////////
-            /// Build & Test
-            //////////////////////////////////////////////
-            stage('Build & Test') {
-                steps {
-                    script {
-                        buildAndTest(config)
-                    }
+                stage("Build & Test") {
+                    buildAndTest(config)
                 }
-            }
 
-            //////////////////////////////////////////////
-            /// Sonar Scan
-            //////////////////////////////////////////////
-            stage('Sonar Scan') {
-                steps {
-                    script {
-                        sonarScan(config)
-                    }
+                stage("Sonar Scan") {
+                    sonarScan(config)
                 }
-            }
 
-            //////////////////////////////////////////////
-            /// Trivy Scan
-            //////////////////////////////////////////////
-            stage('Trivy Scan') {
-                steps {
-                    script {
-                        trivyScan(config)
-                    }
+                stage("Trivy Scan") {
+                    trivyScan(config)
                 }
-            }
 
-            //////////////////////////////////////////////
-            /// Archive Reports
-            //////////////////////////////////////////////
-            stage('Archive Reports') {
-                steps {
-                    script {
-                        archiveReports(config)
-                    }
+                stage("Archive Reports") {
+                    archiveReports(config)
                 }
-            }
-        }
 
-        //////////////////////////////////////////////
-        /// Post Actions
-        //////////////////////////////////////////////
-        post {
+                echo "BUILD SUCCESS"
 
-            //////////////////////////////////////////////
-            /// Clean AFTER BUILD
-            //////////////////////////////////////////////
-            // always {
-            //     echo "=== CLEANING WORKSPACE ==="
+            } catch(Exception e) {
 
-            //     cleanWs(
-            //         deleteDirs: true,
-            //         disableDeferredWipeout: true,
-            //         notFailBuild: true
-            //     )
-            // }
+                echo "BUILD FAILED"
 
-            success {
-                echo " BUILD SUCCESS"
-            }
-
-            failure {
-                echo " BUILD FAILED"
+                throw e
             }
         }
     }
