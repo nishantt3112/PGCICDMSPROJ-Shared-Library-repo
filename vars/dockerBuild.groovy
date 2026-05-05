@@ -9,8 +9,7 @@
 
 def call(Map config = [:]) {
 
-
-     def gitSha = sh(
+  def gitSha = sh(
         script: "git rev-parse --short=7 HEAD",
         returnStdout: true
     ).trim()
@@ -28,12 +27,11 @@ def call(Map config = [:]) {
     echo "Context: ${buildContext}"
 
      sh """
-        set -e
-        export PATH=\$PATH:/usr/bin
+        ls -l /usr/bin/docker
 
-        docker --version
+/usr/bin/docker --version
 
-        docker build -t ${imageTag} -f ${dockerfilePath} ${buildContext}
+/usr/bin/docker build -t ${imageTag} -f ${dockerfilePath} ${buildContext}
     """
 
     echo "=== DOCKER BUILD END ==="
