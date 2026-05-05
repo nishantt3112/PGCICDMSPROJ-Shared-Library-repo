@@ -219,7 +219,7 @@ def call(Map config = [:]) {
         branch == 'stage'
     )
 
-    }
+    
 
     // SCM checkout (NO git init, NO manual repo setup)
     def scmVars = checkout([
