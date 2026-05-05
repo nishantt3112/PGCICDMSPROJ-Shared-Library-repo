@@ -30,7 +30,22 @@ def call(Map config = [:]) {
 /usr/bin/docker --version
 
 /usr/bin/docker build -t ${imageTag} -f ${dockerfilePath} ${buildContext}
+
     """
+
+    echo "=== ECR LOGIN ==="
+    sh """
+        aws ecr get-login-password --region us-east-2 \
+        | /usr/bin/docker login --username AWS --password-stdin ${config.ecrRepo.split('/')[0]}
+    """
+
+    echo "=== PUSH IMAGE ==="
+    sh """
+       /usr/bin/docker push ${fullImage}
+    """
+
+    echo "=== DONE ==="
+    return fullImage
 
     echo "=== DOCKER BUILD END ==="
     echo "=== DOCKER BUILD END ==="
