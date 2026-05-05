@@ -9,7 +9,13 @@
 
 def call(Map config = [:]) {
 
-    def imageTag = "${config.ecrRepo}:${env.GIT_COMMIT.take(7)}-${env.BUILD_NUMBER}"
+
+     def gitSha = sh(
+        script: "git rev-parse --short=7 HEAD",
+        returnStdout: true
+    ).trim()
+
+    def imageTag = "${config.ecrRepo}:${env.gitSha}-${env.BUILD_NUMBER}"
 
     def dockerfilePath =
         "${config.servicePath}/Dockerfile"
