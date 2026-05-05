@@ -16,8 +16,7 @@ def call(Map config = [:]) {
 
     def imageTag = "${config.ecrRepo}:${gitSha}-${env.BUILD_NUMBER}"
 
-    def dockerfilePath =
-        "${config.servicePath}/Dockerfile"
+    def dockerfilePath = config.dockerFilePath ?: "${config.servicePath}/Dockerfile"
 
     def buildContext =
         config.servicePath
