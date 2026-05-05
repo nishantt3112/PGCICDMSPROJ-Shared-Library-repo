@@ -291,22 +291,23 @@ def call(Map config = [:]) {
                     trivyScan(config)
                 }
 
-                  stage("Docker Build") {
-                    dockerBuild(config)
-                }
-
-
                 stage("Archive Reports") {
                     archiveReports(config)
                 }
 
-                echo "BUILD SUCCESS"
 
             } catch (Exception e) {
 
                 echo "BUILD FAILED: ${e.message}"
                 throw e
             }
+
+            stage("Docker Build") {
+            dockerBuild(config)
+            echo "BUILD DOCKER IMAGE SUCCESSFUL"
+        }
+            echo "BUILD SUCCESS"
+
         }
     }
 }
