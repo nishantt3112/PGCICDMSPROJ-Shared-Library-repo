@@ -18,8 +18,7 @@ def call(Map config = [:]) {
 
     def dockerfilePath = config.dockerFilePath ?: "${config.servicePath}/Dockerfile"
 
-    def buildContext =
-        config.servicePath
+    def buildContext   = config.buildContext
 
     echo "=== DOCKER BUILD START ==="
     echo "Dockerfile: ${dockerfilePath}"
