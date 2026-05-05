@@ -210,7 +210,9 @@ def call(Map config = [:]) {
         env.GIT_LOCAL_BRANCH ?:
         env.GIT_BRANCH?.replace("origin/", "") ?:
         "main"
+    echo "=== CLEANING OLD WORKSPACE ==="
 
+    deleteDir()
     echo "CHECKOUT BRANCH = ${branch}"
 
     def fullHistory = (
