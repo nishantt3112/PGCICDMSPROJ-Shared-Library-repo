@@ -212,7 +212,7 @@ def call(Map config = [:]) {
         "main"
     echo "=== CLEANING OLD WORKSPACE ==="
 
-    deleteDir()
+    
     echo "CHECKOUT BRANCH = ${branch}"
 
     def fullHistory = (
