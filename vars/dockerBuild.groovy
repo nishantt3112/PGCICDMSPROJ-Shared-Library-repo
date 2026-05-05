@@ -27,10 +27,15 @@ def call(Map config = [:]) {
     echo "Dockerfile: ${dockerfilePath}"
     echo "Context: ${buildContext}"
 
-    docker.build(
-        imageTag,
-        "-f ${dockerfilePath} ${buildContext}"
-    )
+     sh """
+        set -e
+        export PATH=\$PATH:/usr/bin
 
+        docker --version
+
+        docker build -t ${imageTag} -f ${dockerfilePath} ${buildContext}
+    """
+
+    echo "=== DOCKER BUILD END ==="
     echo "=== DOCKER BUILD END ==="
 }
