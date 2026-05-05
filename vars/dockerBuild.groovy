@@ -14,7 +14,7 @@ def call(Map config = [:]) {
         returnStdout: true
     ).trim()
 
-    def imageTag = "${config.ecrRepo}:${env.gitSha}-${env.BUILD_NUMBER}"
+    def imageTag = "${config.ecrRepo}:${gitSha}-${env.BUILD_NUMBER}"
 
     def dockerfilePath =
         "${config.servicePath}/Dockerfile"
