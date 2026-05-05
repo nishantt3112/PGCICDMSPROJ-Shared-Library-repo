@@ -291,6 +291,11 @@ def call(Map config = [:]) {
                     trivyScan(config)
                 }
 
+                  stage("Docker Build") {
+                    dockerBuild(config)
+                }
+
+
                 stage("Archive Reports") {
                     archiveReports(config)
                 }
