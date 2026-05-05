@@ -218,9 +218,7 @@ def call(Map config = [:]) {
         branch == 'prod' ||
         branch == 'stage'
     )
-      stage("Workspace Clean") {
-        cleanWs()
-        
+
     }
 
     // SCM checkout (NO git init, NO manual repo setup)
