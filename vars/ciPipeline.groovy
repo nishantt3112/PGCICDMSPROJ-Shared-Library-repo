@@ -244,6 +244,11 @@ def call(Map config = [:]) {
                     env.GIT_URL   = config.gitUrl ?: ""
                     env.ECR_REPO  = config.ecrRepo ?: ""
                     env.AWS_REGION = "us-east-1"
+                    
+                    // dockerImage 
+                    env.GIT_SHA = sh(script: "git rev-parse --short=7 HEAD", returnStdout: true).trim()
+                    env.IMAGE_TAG = "${env.GIT_SHA}-${env.BUILD_NUMBER}"
+                    env.FULL_IMAGE = "${config.ecrRepo}:${env.IMAGE_TAG}"
 
                     // -----------------------------
                     // language specific (UNCHANGED)
@@ -304,8 +309,19 @@ def call(Map config = [:]) {
 
             stage("Docker Build") {
             dockerBuild(config)
-            echo "BUILD DOCKER IMAGE SUCCESSFUL"
+            echo "BUILD DOCKER IMAGE SUCCESS"
         }
+            try{
+                stage("Trivy Image Scan") {
+                    tirvyImageScan(config)
+                }
+            }
+            catch (Exception e) {
+
+                echo "TRIVY FAILED: ${e.message}"
+                throw e
+            }
+            
             echo "BUILD SUCCESS"
 
         }
