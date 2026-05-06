@@ -56,3 +56,4 @@ def call(Map config = [:]) {
     echo "=== DOCKER BUILD END ==="
     echo "=== DOCKER BUILD END ==="
 }
+}
