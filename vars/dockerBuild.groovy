@@ -51,7 +51,26 @@ def call(Map config = [:]) {
     """
 
     echo "=== DONE ==="
-    return fullImage
+
+    echo "=== GET IMAGE DIGEST ==="
+
+    def imageDigest = sh(
+        script: """
+            /usr/bin/docker inspect \
+            --format='{{index .RepoDigests 0}}' \
+            ${fullImage} | cut -d'@' -f2
+        """,
+        returnStdout: true
+    ).trim()
+
+    echo "IMAGE DIGEST = ${imageDigest}"
+
+    env.IMAGE_DIGEST = imageDigest
+
+    return [
+        image : fullImage,
+        digest: imageDigest
+    ]
 
     echo "=== DOCKER BUILD END ==="
     echo "=== DOCKER BUILD END ==="
