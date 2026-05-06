@@ -32,6 +32,10 @@ def call(Map config = [:]) {
 /usr/bin/docker build -t ${imageTag} -f ${dockerfilePath} ${buildContext}
 
     """
+    withCredentials([
+    [$class: 'AmazonWebServicesCredentialsBinding',
+     credentialsId: 'aws-creds']
+]) {
 
     echo "=== ECR LOGIN ==="
     sh """
