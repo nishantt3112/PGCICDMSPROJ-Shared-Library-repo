@@ -313,7 +313,7 @@ def call(Map config = [:]) {
         }
             try{
                 stage("Trivy Image Scan") {
-                    tirvyImageScan(config)
+                    trivyImageScan(config)
                 }
             }
             catch (Exception e) {
