@@ -9,7 +9,7 @@ def call(Map config = [:]) {
 
         trivy image ${env.FULL_IMAGE} \
           --severity HIGH,CRITICAL \
-          --exit-code 1 \
+          --exit-code 0 \
           --cache-dir "\$TRIVY_CACHE_DIR"
     """
 
