@@ -14,7 +14,8 @@ def call(Map config = [:]) {
         returnStdout: true
     ).trim()
 
-    def imageTag = "${config.ecrRepo}:${gitSha}-${env.BUILD_NUMBER}"
+    def fullImage = "${config.ecrRepo}:${gitSha}-${env.BUILD_NUMBER}"
+    def imageTag = "${gitSha}-${env.BUILD_NUMBER}"
 
     def dockerfilePath = config.dockerFilePath ?: "${config.servicePath}/Dockerfile"
 
@@ -29,13 +30,14 @@ def call(Map config = [:]) {
 
 /usr/bin/docker --version
 
-/usr/bin/docker build -t ${imageTag} -f ${dockerfilePath} ${buildContext}
+/usr/bin/docker build -t ${fullImage} -f ${dockerfilePath} ${buildContext}
 
     """
     withCredentials([
     [$class: 'AmazonWebServicesCredentialsBinding',
      credentialsId: 'aws-creds']
-]) {
+    ])
+    {
 
     echo "=== ECR LOGIN ==="
     sh """
