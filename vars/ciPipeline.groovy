@@ -278,7 +278,6 @@ def call(Map config = [:]) {
                 }
             }
 
- echo "PIPELINE BUILD ID TEST 123456789"
             try {
 
                 // stage("Checkout") {
@@ -314,18 +313,28 @@ def call(Map config = [:]) {
             }
 
 
-            try{
-                stage("Trivy Image Scan") {
-                    trivyImageScan(config)
-                }
-            }
+            // // try{
+            // //     stage("Trivy Image Scan") {
+            // //         trivyImageScan(config)
+            // //     }
+            // // }
 
-            catch (Exception ex) {
+            // // catch (Exception ex) {
 
-                echo "TRIVY FAILED: ${ex.message}"
-                throw ex
+            // //     echo "TRIVY FAILED: ${ex.message}"
+            // //     throw ex
             
-            }
+            // }
+
+            stage("Trivy Image Scan") {
+                    try {
+                        trivyImageScan(config)
+                    } catch (Exception ex) {
+                        echo "TRIVY FAILED: ${ex.message}"
+                        throw ex
+                    }
+                }
+
             try {
                 stage("Helm Template & Push GitOps") {
                     echo "INSIDE HELM STAGE BEFORE FUNCTION"
