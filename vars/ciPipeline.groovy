@@ -278,6 +278,7 @@ def call(Map config = [:]) {
                 }
             }
 
+ echo "PIPELINE BUILD ID TEST 123456789"
             try {
 
                 // stage("Checkout") {
@@ -312,7 +313,7 @@ def call(Map config = [:]) {
             echo "BUILD DOCKER IMAGE SUCCESS"
             }
 
-            
+
             try{
                 stage("Trivy Image Scan") {
                     trivyImageScan(config)
@@ -324,7 +325,7 @@ def call(Map config = [:]) {
                 echo "TRIVY FAILED: ${e.message}"
                 throw e
             }
-            
+            error("AFTER TRIVY REACHED")
             try {
                 stage("Helm Template & Push GitOps") {
                 helmTemplatePushToGitOps(config)
