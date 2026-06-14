@@ -324,11 +324,19 @@ def call(Map config = [:]) {
                 throw e
             }
             
-            stage("Helm Template & Push GitOps") {
+            try {
+                stage("Helm Template & Push GitOps") {
                 helmTemplatePushToGitOps(config)
+                 echo "HELM TEMPLATING SUCCESS"
             }
-            echo "BUILD SUCCESS"
+            }
+            
+            catch (Exception e){
+                echo "HELM FAILED: ${e.message}"
+                throw e 
+            }
 
+            
         }
     }
 }
