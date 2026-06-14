@@ -87,5 +87,4 @@ def call(Map config = [:]) {
         tag : imageTag
     ]
 }
-return result
 }

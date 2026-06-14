@@ -310,14 +310,15 @@ def call(Map config = [:]) {
             stage("Docker Build") {
             dockerBuild(config)
             echo "BUILD DOCKER IMAGE SUCCESS"
-        }
+            }
+
+            
             try{
                 stage("Trivy Image Scan") {
                     trivyImageScan(config)
                 }
             }
 
-             
             catch (Exception e) {
 
                 echo "TRIVY FAILED: ${e.message}"
