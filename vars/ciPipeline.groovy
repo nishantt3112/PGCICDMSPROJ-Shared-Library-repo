@@ -324,8 +324,7 @@ def call(Map config = [:]) {
 
                 echo "TRIVY FAILED: ${e.message}"
                 throw e
-            }
-            error("AFTER TRIVY REACHED")
+            
 
             try {
                 stage("Helm Template & Push GitOps") {
