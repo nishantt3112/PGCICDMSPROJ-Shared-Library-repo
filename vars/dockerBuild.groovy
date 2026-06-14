@@ -41,7 +41,7 @@ def call(Map config = [:]) {
 
     echo "=== ECR LOGIN ==="
     sh """
-        aws ecr get-login-password --region us-east-2 \
+        aws ecr get-login-password --region us-east-1 \
         | /usr/bin/docker login --username AWS --password-stdin ${config.ecrRepo.split('/')[0]}
     """
 
