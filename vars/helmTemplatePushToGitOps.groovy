@@ -78,6 +78,11 @@ def call(Map config = [:]) {
 
     def targetEnv = config.environment ?: "dev"
     def envValuesFile = "helm-chart/env/values-${targetEnv}.yaml"
+    sh """
+    echo "=== DEBUG WORKSPACE ==="
+    pwd
+    ls -R helm-chart || true
+"""
 
     if (!fileExists(envValuesFile)) {
         error("Environment values file not found: ${envValuesFile}")
