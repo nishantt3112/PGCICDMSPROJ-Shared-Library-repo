@@ -316,12 +316,17 @@ def call(Map config = [:]) {
                     trivyImageScan(config)
                 }
             }
+
+             
             catch (Exception e) {
 
                 echo "TRIVY FAILED: ${e.message}"
                 throw e
             }
             
+            stage("Helm Template & Push GitOps") {
+                helmTemplatePushToGitOps(config)
+            }
             echo "BUILD SUCCESS"
 
         }

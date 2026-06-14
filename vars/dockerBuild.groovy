@@ -78,13 +78,14 @@ def call(Map config = [:]) {
     echo "IMAGE DIGEST = ${imageDigest}"
 
     env.IMAGE_DIGEST = imageDigest
+    env.IMAGE_TAG = imageTag
+    
 
     return [
         image : fullImage,
-        digest: imageDigest
+        digest: imageDigest,
+        tag : imageTag
     ]
-
-    echo "=== DOCKER BUILD END ==="
-    echo "=== DOCKER BUILD END ==="
 }
+return result
 }
