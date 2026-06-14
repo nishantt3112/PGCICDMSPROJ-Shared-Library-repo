@@ -251,7 +251,8 @@ def call(Map config = [:]) {
         git sparse-checkout init --cone
 
         echo "=== SET SERVICE PATH ==="
-        git sparse-checkout set ${servicePath} helm-chart
+        git sparse-checkout set ${servicePath} \
+                                 helm-chart
 
         echo "=== DONE ==="
     """
