@@ -242,7 +242,7 @@ def call(Map config = [:]) {
 
     echo "=== SCM CHECKOUT DONE ==="
 
-    // NOW APPLY SPARSE CHECKOUT ON TOP
+    NOW APPLY SPARSE CHECKOUT ON TOP
     sh """
         set -e
          git config --global --add safe.directory "\$(pwd)"
@@ -251,8 +251,8 @@ def call(Map config = [:]) {
         git sparse-checkout init --cone
 
         echo "=== SET SERVICE PATH ==="
-        git sparse-checkout set ${servicePath} \
-                                 helm-chart
+        git sparse-checkout set ${servicePath} \ 
+        helm-chart
 
         echo "=== DONE ==="
     """
