@@ -325,7 +325,7 @@ def call(Map config = [:]) {
                 echo "TRIVY FAILED: ${ex.message}"
                 throw ex
             
-
+            }
             try {
                 stage("Helm Template & Push GitOps") {
                     echo "INSIDE HELM STAGE BEFORE FUNCTION"
@@ -344,7 +344,7 @@ def call(Map config = [:]) {
         }
     }
 }
-}
+
 // def call(Map config=[:]){
 
 //     def changes = [:]
