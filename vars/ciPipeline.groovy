@@ -243,7 +243,7 @@ def call(Map config = [:]) {
                     // shared external configs
                     env.GIT_URL   = config.gitUrl ?: ""
                     env.ECR_REPO  = config.ecrRepo ?: ""
-                    env.AWS_REGION = "us-east-2"
+                    env.AWS_REGION = "us-east-1"
                     
                     // dockerImage 
                     env.GIT_SHA = sh(script: "git rev-parse --short=7 HEAD", returnStdout: true).trim()
