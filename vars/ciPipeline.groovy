@@ -326,17 +326,20 @@ def call(Map config = [:]) {
                 throw e
             }
             error("AFTER TRIVY REACHED")
+
             try {
                 stage("Helm Template & Push GitOps") {
-                helmTemplatePushToGitOps(config)
-                 echo "HELM TEMPLATING SUCCESS"
-            }
-            }
-            
-            catch (Exception e){
-                echo "HELM FAILED: ${e.message}"
-                throw e 
-            }
+                    echo "INSIDE HELM STAGE BEFORE FUNCTION"
+
+                    helmTemplatePushToGitOps(config)
+
+                    echo "INSIDE HELM STAGE AFTER FUNCTION"
+                }
+             }
+                catch (Exception e) {
+                    echo "HELM FAILED: ${e.message}"
+                    throw e
+                }
 
             
         }
