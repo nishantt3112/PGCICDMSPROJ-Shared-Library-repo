@@ -320,10 +320,10 @@ def call(Map config = [:]) {
                 }
             }
 
-            catch (Exception e) {
+            catch (Exception ex) {
 
-                echo "TRIVY FAILED: ${e.message}"
-                throw e
+                echo "TRIVY FAILED: ${ex.message}"
+                throw ex
             
 
             try {
@@ -335,9 +335,9 @@ def call(Map config = [:]) {
                     echo "INSIDE HELM STAGE AFTER FUNCTION"
                 }
              }
-                catch (Exception e) {
-                    echo "HELM FAILED: ${e.message}"
-                    throw e
+                catch (Exception err) {
+                    echo "HELM FAILED: ${err.message}"
+                    throw err
                 }
 
             
