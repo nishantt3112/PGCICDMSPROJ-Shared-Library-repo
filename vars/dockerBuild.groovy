@@ -40,10 +40,22 @@ def call(Map config = [:]) {
     {
 
     echo "=== ECR LOGIN ==="
+    // sh """
+    //     aws ecr get-login-password --region us-east-1 \
+    //     | /usr/bin/docker login --username AWS --password-stdin ${config.ecrRepo.split('/')[0]}
+    // """
     sh """
-        aws ecr get-login-password --region us-east-1 \
-        | /usr/bin/docker login --username AWS --password-stdin ${config.ecrRepo.split('/')[0]}
+    set -e
+
+    echo "=== ECR LOGIN ==="
+
+    TOKEN=\$(aws ecr get-login-password --region us-east-1)
+
+    echo "\$TOKEN" | /usr/bin/docker login \
+        --username AWS \
+        --password-stdin ${config.ecrRepo.split('/')[0]}
     """
+
 
     echo "=== PUSH IMAGE ==="
     sh """
