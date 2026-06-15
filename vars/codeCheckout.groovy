@@ -216,7 +216,7 @@ def call(Map config = [:]) {
     echo "CHECKOUT BRANCH = ${branch}"
 
     def fullHistory = (
-        branch == 'main' ||
+        branch == 'dev' ||
         branch == 'prod' ||
         branch == 'stage'
     )
@@ -243,19 +243,25 @@ def call(Map config = [:]) {
     echo "=== SCM CHECKOUT DONE ==="
 
     NOW APPLY SPARSE CHECKOUT ON TOP
-    sh """
-        set -e
-         git config --global --add safe.directory "\$(pwd)"
-        echo "=== ENABLE SPARSE CHECKOUT ==="
+    // sh """
+    //     set -e
+    //      git config --global --add safe.directory "\$(pwd)"
+    //     echo "=== ENABLE SPARSE CHECKOUT ==="
 
-        git sparse-checkout init --cone
+    //     git sparse-checkout init --cone
 
-        echo "=== SET SERVICE PATH ==="
-        git sparse-checkout set ${servicePath} \ 
-        helm-chart
+    //     echo "=== SET SERVICE PATH ==="
+    //     git sparse-checkout set ${servicePath} \ 
+    //     helm-chart
 
-        echo "=== DONE ==="
-    """
+    //     echo "=== DONE ==="
+    // """
+    [$class: 'SparseCheckoutPaths',
+        sparseCheckoutPaths: [
+            [path: "${servicePath}"],
+            [path: "helm-chart"]
+        ]
+]
 }
 
 ///////////////
