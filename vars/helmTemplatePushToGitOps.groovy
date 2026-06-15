@@ -111,7 +111,7 @@ def call(Map config = [:]) {
 
         checkout([
             $class: 'GitSCM',
-            branches: [[name: gitBranch]],
+            branches: [[name: "*/${gitBranch}"]],
             userRemoteConfigs: [[
                 url: gitopsRepoUrl,
                 credentialsId: "jenkins-gitops"
@@ -122,6 +122,7 @@ def call(Map config = [:]) {
 
         sh """
             set -e
+            git checkout -B ${gitBranch} origin/${gitBranch}
             cp ../rendered.yaml kustom/base/rendered.yaml
         """
 
@@ -135,6 +136,8 @@ def call(Map config = [:]) {
         echo "=== COMMIT CHANGES ==="
 
         sh """
+            
+            git status
             git add .
             git commit -m "${config.serviceName}: updated image ${env.IMAGE_TAG} digest ${env.IMAGE_DIGEST}" || echo "No changes"
         """
