@@ -148,12 +148,13 @@ def call(Map config = [:]) {
         credentialsId: "jenkins-gitops",
         usernameVariable: "GIT_USER",
         passwordVariable: "GIT_PASS"
-        )]) 
+        )]) {
 
         sh """
             git remote set-url origin https://${GIT_USER}:${GIT_PASS}@github.com/nishantt3112/ProdGrade_CICD_DevSecOps_Microservices_Project.git
             git push origin ${gitBranch}
         """
+        }
     }
 
     echo "=== GITOPS UPDATE DONE ==="
