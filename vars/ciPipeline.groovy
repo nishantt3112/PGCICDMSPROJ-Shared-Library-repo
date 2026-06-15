@@ -215,7 +215,7 @@
 
 def call(Map config = [:]) {
 
-    node {
+    // node {
         // deleteDir()
         docker.image(config.dockerCiPrebakedImage)
         .inside(config.dockerCIPrebakedImageArgs ?: '') {
@@ -346,7 +346,7 @@ def call(Map config = [:]) {
 
             
         }
-    }
+    
 }
 
 // def call(Map config=[:]){
