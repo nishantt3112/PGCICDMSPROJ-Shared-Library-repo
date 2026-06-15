@@ -79,7 +79,6 @@ def call(Map config = [:]) {
     def targetEnv = config.environment ?: "dev"
     def envValuesFile = "helm-chart/env/values-${targetEnv}.yaml"
     
-    gi
 
     if (!fileExists(envValuesFile)) {
         error("Environment values file not found: ${envValuesFile}")
