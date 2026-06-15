@@ -217,11 +217,6 @@ def call(Map config = [:]) {
 
     node {
         // deleteDir()
-//         stage('Checkout') {
-
-//     codeCheckout(config)
-
-// }
         docker.image(config.dockerCiPrebakedImage)
         .inside(config.dockerCIPrebakedImageArgs ?: '') {
 
