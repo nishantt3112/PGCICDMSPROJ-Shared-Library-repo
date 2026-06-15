@@ -78,11 +78,8 @@ def call(Map config = [:]) {
 
     def targetEnv = config.environment ?: "dev"
     def envValuesFile = "helm-chart/env/values-${targetEnv}.yaml"
-    sh """
-    echo "=== DEBUG WORKSPACE ==="
-    pwd
-    ls -R helm-chart || true
-"""
+    
+    gi
 
     if (!fileExists(envValuesFile)) {
         error("Environment values file not found: ${envValuesFile}")
@@ -108,7 +105,7 @@ def call(Map config = [:]) {
     echo "=== CHECKOUT GITOPS REPO ==="
 
     def gitBranch = config.gitBranch ?: "main"
-    def gitopsRepoUrl = "git@github.com:nishantt3112/ProdGrade_CICD_DevSecOps_Microservices_Project.git"
+    def gitopsRepoUrl = "https://github.com/nishantt3112/ProdGrade_CICD_DevSecOps_Microservices_Project.git"
 
 
     dir("gitops") {
