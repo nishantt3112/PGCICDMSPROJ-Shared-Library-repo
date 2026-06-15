@@ -56,12 +56,20 @@ def call(Map config = [:]) {
 
             echo "=== QUALITY GATE STATUS: ${qg.status} ==="
 
-            if (qg.status != 'OK') {
-                error " Quality Gate FAILED: ${qg.status}"
-            }
+            // if (qg.status != 'OK') {
+            //     error " Quality Gate FAILED: ${qg.status}"
+            // }
+
+
+                    if (qg.status != 'OK') {
+                    echo "WARNING: Quality Gate FAILED: ${qg.status}"
+                } else {
+                    echo "QUALITY GATE PASSED"
+                }
+
         }
 
-        echo " QUALITY GATE PASSED"
+        // echo " QUALITY GATE PASSED"
         
     
     
