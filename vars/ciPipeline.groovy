@@ -241,7 +241,7 @@ def call(Map config = [:]) {
                     env.AWS_REGION = "us-east-1"
                     
                     // dockerImage 
-                    env.GIT_SHA = sh(script: "git rev-parse --short=7 HEAD", returnStdout: true).trim()
+                    // env.GIT_SHA = sh(script: "git rev-parse --short=7 HEAD", returnStdout: true).trim()
                     env.IMAGE_TAG = "${env.GIT_SHA}-${env.BUILD_NUMBER}"
                     env.FULL_IMAGE = "${config.ecrRepo}:${env.IMAGE_TAG}"
 
