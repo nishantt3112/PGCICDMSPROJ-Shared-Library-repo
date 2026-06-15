@@ -237,6 +237,13 @@ def call(Map config = [:]) {
                 noTags: false,
                 shallow: !fullHistory
             ]
+        ],
+
+        [$class: 'SparseCheckoutPaths',
+        sparseCheckoutPaths: [
+            [path: "${servicePath}"],
+            [path: "helm-chart"]
+        ]
         ]
     ])
 
@@ -256,12 +263,6 @@ def call(Map config = [:]) {
 
     //     echo "=== DONE ==="
     // """
-    [$class: 'SparseCheckoutPaths',
-        sparseCheckoutPaths: [
-            [path: "${servicePath}"],
-            [path: "helm-chart"]
-        ]
-]
 }
 
 ///////////////
