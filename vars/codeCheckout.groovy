@@ -201,69 +201,68 @@
 // }
 
 
-////////
-def call(Map config = [:]) {
+////////######################////////######################////////######################////////######################
+// def call(Map config = [:]) {
 
-    def servicePath = config.servicePath
+//     def servicePath = config.servicePath
 
-    def branch =
-        env.GIT_LOCAL_BRANCH ?:
-        env.GIT_BRANCH?.replace("origin/", "") ?:
-        "main"
-    echo "=== CLEANING OLD WORKSPACE ==="
+//     def branch =
+//         env.GIT_LOCAL_BRANCH ?:
+//         env.GIT_BRANCH?.replace("origin/", "") ?:
+//         "main"
 
-    
-    echo "CHECKOUT BRANCH = ${branch}"
+//     echo "CHECKOUT BRANCH = ${branch}"
 
-    def fullHistory = (
-        branch == 'dev' ||
-        branch == 'prod' ||
-        branch == 'stage'
-    )
+//     def fullHistory = (
+//         branch == 'dev' ||
+//         branch == 'prod' ||
+//         branch == 'stage'
+//     )
 
     
 
-    // SCM checkout (NO git init, NO manual repo setup)
-    def scmVars = checkout([
-        $class: 'GitSCM',
-        branches: [[name: "*/${branch}"]],
-        userRemoteConfigs: [[
-            url: config.gitUrl
-        ]],
-        extensions: [
-            // optional shallow clone for speed
-            [$class: 'CloneOption',
-                depth: fullHistory ? 0 : 1,
-                noTags: false,
-                shallow: !fullHistory
-            ]
-        ],
+//     // SCM checkout (NO git init, NO manual repo setup)
+//     def scmVars = checkout([
+//         $class: 'GitSCM',
+//         branches: [[name: "*/${branch}"]],
+//         userRemoteConfigs: [[
+//             url: config.gitUrl
+//         ]],
+//         extensions: [
+//             // optional shallow clone for speed
+//             [$class: 'CloneOption',
+//                 depth: fullHistory ? 0 : 1,
+//                 noTags: false,
+//                 shallow: !fullHistory
+//             ]
+//         ],
 
-        [$class: 'SparseCheckoutPaths',
-        sparseCheckoutPaths: [
-            [path: "${servicePath}"],
-            [path: "helm-chart"]
-        ]
-        ]
-    ])
+//         [$class: 'SparseCheckoutPaths',
+//         sparseCheckoutPaths: [
+//             [path: "${servicePath}"],
+//             [path: "helm-chart"]
+//         ]
+//         ]
+//     ])
 
-    echo "=== SCM CHECKOUT DONE ==="
+//     echo "=== SCM CHECKOUT DONE ==="
 
-    NOW APPLY SPARSE CHECKOUT ON TOP
-    // sh """
-    //     set -e
-    //      git config --global --add safe.directory "\$(pwd)"
-    //     echo "=== ENABLE SPARSE CHECKOUT ==="
+//     NOW APPLY SPARSE CHECKOUT ON TOP
+//     // sh """
+//     //     set -e
+//     //      git config --global --add safe.directory "\$(pwd)"
+//     //     echo "=== ENABLE SPARSE CHECKOUT ==="
 
-    //     git sparse-checkout init --cone
+//     //     git sparse-checkout init --cone
 
-    //     echo "=== SET SERVICE PATH ==="
-    //     git sparse-checkout set ${servicePath} \ 
-    //     helm-chart
+//     //     echo "=== SET SERVICE PATH ==="
+//     //     git sparse-checkout set ${servicePath} \ 
+//     //     helm-chart
 
-    //     echo "=== DONE ==="
-    // """
-}
+//     //     echo "=== DONE ==="
+//     // """
+// }////////######################////////######################////////######################////////######################
+
 
 ///////////////
 
