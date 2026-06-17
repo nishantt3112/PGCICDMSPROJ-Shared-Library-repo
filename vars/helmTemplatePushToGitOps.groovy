@@ -282,6 +282,5 @@ dir("gitops") {
 }
 
 echo "=== GITOPS UPDATE COMPLETE ==="
-```
 
 }
