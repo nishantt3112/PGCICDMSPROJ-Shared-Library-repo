@@ -166,7 +166,6 @@
 
 def call(Map config = [:]) {
 
-```
 if (!config.runHelm) {
     echo "=== HELM SKIPPED (runHelm=false) ==="
     return
