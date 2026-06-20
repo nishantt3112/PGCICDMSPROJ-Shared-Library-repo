@@ -1,5 +1,13 @@
 def call(Map config = [:]) {
 
+
+    env.TMP_DIR = "${env.WORKSPACE}/.tmp-${env.BUILD_ID}"
+
+        sh """
+        mkdir -p ${env.TMP_DIR}
+        mkdir -p ${env.TMP_DIR}/trivy
+        """
+
     echo "=== TRIVY IMAGE SCAN START ==="
 
     sh """
