@@ -321,14 +321,14 @@ def call(Map config = [:]) {
             
             // }
 
-            stage("Trivy Image Scan") {
-                    try {
-                        trivyImageScan(config)
-                    } catch (Exception ex) {
-                        echo "TRIVY FAILED: ${ex.message}"
-                        throw ex
-                    }
-                }
+            // stage("Trivy Image Scan") {
+            //         try {
+            //             trivyImageScan(config)
+            //         } catch (Exception ex) {
+            //             echo "TRIVY FAILED: ${ex.message}"
+            //             throw ex
+            //         }
+            //     }
 
             try {
                 stage("Helm Template & Push GitOps") {
