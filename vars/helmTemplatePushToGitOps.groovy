@@ -234,6 +234,7 @@ sh """
     set -e
 
     helm template helm-chart \
+      --namespace ${targetEnv}-boutique-app \
       -f helm-chart/values.yaml \
       -f ${envValuesFile} \
       -f gitops/kustom/helm-values/helm-desired-state-values.yaml \
